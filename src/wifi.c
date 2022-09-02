@@ -55,6 +55,42 @@ void wifi_free(wifi_t *wifi)
     free(wifi);
 }
 
+int wifi_open(wifi_t *wifi, const char *backend)
+{
+    int i;
+
+    if (backend == NULL)
+        return _wifi_error(wifi, WIFI_ERROR_OPEN, 0, "WiFi backend param invalid");
+
+    for(i=0; wifi_backends[i]; i++) {
+        if (!strncmp(backend, wifi_backends[i]->ident, strlen(backend))) {
+            wifi->backend = wifi_backends[i];
+            break;
+        }
+    }
+    if (wifi->backend == NULL)
+        return _wifi_error(wifi, WIFI_ERROR_OPEN, 0, "WiFi backend %s not found", backend);
+
+    if(wifi->backend->init) {
+        wifi->backend_handle = wifi->backend->init();
+        if (wifi->backend_handle == NULL)
+            return _wifi_error(wifi, WIFI_ERROR_OPEN, 0, "WiFi backend %s init fail", backend);
+    } else {
+        return _wifi_error(wifi, WIFI_ERROR_OPEN, 0, "WiFi backend %s not implemented yet", backend);
+    }
+
+    return 0;
+}
+
+void wifi_close(wifi_t *wifi)
+{
+    if (wifi == NULL || wifi->backend == NULL)
+        return;
+    
+    if (wifi->backend->free)
+        wifi->backend->free(wifi->backend_handle);
+}
+
 const char *wifi_errmsg(wifi_t *wifi)
 {
     return wifi->error.errmsg;

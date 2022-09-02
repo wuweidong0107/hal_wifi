@@ -21,9 +21,27 @@ void nmcli_free(void *handle)
         free(handle);
 }
 
+bool nmcli_enable(void *handle, bool enabled)
+{
+    if (enabled)
+        pclose(popen("nmcli radio wifi on", "r"));
+    else
+        pclose(popen("nmcli radio wifi off", "r"));
+}
+
+bool nmcli_connection_info(void *handle, wifi_network_into_t *info)
+{
+}
+
+void nmcli_scan(void *handle)
+{
+
+}
+
 wifi_backend_t wifi_nmcli = {
     nmcli_init,
     nmcli_free,
+    nmcli_enable,
     "nmcli"
 };
 
