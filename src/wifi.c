@@ -16,7 +16,7 @@ struct wifi_handle {
     } error;
 };
 
-const wifi_backend_t *wifi_backends[] = {
+static const wifi_backend_t *wifi_backends[] = {
     &wifi_nmcli,
     NULL,
 };
@@ -39,6 +39,14 @@ static int _wifi_error(wifi_t *wifi, int code, int c_errno, const char *fmt, ...
     }
 
     return code;
+}
+
+bool wifi_connection_info(wifi_t *wifi, wifi_network_into_t *info)
+{
+    if (wifi && wifi->backend && wifi->backend->connection_info)
+        return wifi->backend->connection_info(wifi->backend_handle, info);
+    
+    return false;
 }
 
 wifi_t *wifi_new(void)

@@ -10,7 +10,7 @@ OBJCOPY	?= $(CROSS_COMPILE)objcopy
 OBJDUMP	?= $(CROSS_COMPILE)objdump
 
 LIB = libhal_wifi.so
-SRCS = src/wifi.c src/wifi_nmcli.c
+SRCS = src/wifi.c src/wifi_nmcli.c src/stdstring.c
 
 SRCDIR = src
 OBJDIR = obj

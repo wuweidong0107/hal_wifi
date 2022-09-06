@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "list.h"
+#include "stdstring.h"
 #include "wifi_internal.h"
 
 typedef struct nmcli_handle {
@@ -29,8 +29,26 @@ bool nmcli_enable(void *handle, bool enabled)
         pclose(popen("nmcli radio wifi off", "r"));
 }
 
-bool nmcli_connection_info(void *handle, wifi_network_into_t *info)
+static bool nmcli_connection_info(void *handle, wifi_network_into_t *info)
 {
+    FILE *cmd_file = NULL;
+    char line[512];
+
+    if (!info)
+        return false;
+
+    cmd_file = popen("nmcli -f NAME,TYPE c show --active | tail -n2", "r");
+    if (fgets(line, sizeof(line), cmd_file)) {
+        if(string_ends_with(string_trim(line), "wifi")) {
+            char *rest = line;
+            char *ssid = strtok_r(rest, " ", &rest);
+            strncpy(info->ssid, ssid, sizeof(info->ssid));
+            info->connected = true;
+            return true;
+        }
+    }
+
+    return false;
 }
 
 void nmcli_scan(void *handle)
@@ -39,9 +57,10 @@ void nmcli_scan(void *handle)
 }
 
 wifi_backend_t wifi_nmcli = {
-    nmcli_init,
-    nmcli_free,
-    nmcli_enable,
-    "nmcli"
+    .init = nmcli_init,
+    .free = nmcli_free,
+    .enable = nmcli_enable,
+    .connection_info = nmcli_connection_info,
+    .ident = "nmcli"
 };
 
