@@ -41,7 +41,15 @@ static int _wifi_error(wifi_t *wifi, int code, int c_errno, const char *fmt, ...
     return code;
 }
 
-bool wifi_connection_info(wifi_t *wifi, wifi_network_into_t *info)
+void wifi_scan(wifi_t *wifi)
+{
+    if (wifi && wifi->backend && wifi->backend->scan) {
+        printf("%s\n", __func__);
+        wifi->backend->scan(wifi->backend_handle);
+    }
+}
+
+bool wifi_connection_info(wifi_t *wifi, wifi_network_info_t *info)
 {
     if (wifi && wifi->backend && wifi->backend->connection_info)
         return wifi->backend->connection_info(wifi->backend_handle, info);

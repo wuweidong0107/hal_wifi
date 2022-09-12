@@ -53,4 +53,6 @@ char *string_ucwords(char *s);
 char *string_trim_left(char *s);
 char *string_trim_right(char *s);
 char *string_trim(char *s);
+
+int string_split(const char *s, const char *delim, char *parts[], size_t count);
 #endif

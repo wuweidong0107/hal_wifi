@@ -1,4 +1,5 @@
 #include <ctype.h>
+#include <stdlib.h>
 #include "stdstring.h"
 
 char *string_init(const char *src)
@@ -73,4 +74,45 @@ char *string_trim(char *s)
 {
     string_trim_right(s);
     string_trim_left(s);
+}
+
+int string_split(const char *s, const char *delim, char *parts[], size_t count)
+{
+    int i = 0;
+    char *copy = NULL, *tmp = NULL;
+
+    if (!(copy = strdup(s)))
+        return -1;
+    
+    char *rest = copy;
+    char *token = strtok_r(rest, delim, &rest);
+    if (!token) {
+        free(copy);
+        return 0;
+    }
+    
+    if (!(tmp = strdup(token)))
+        goto ret;
+
+    parts[i++] = tmp;
+
+    while(token) {
+        token = strtok_r(NULL, delim, &rest);
+        if (!token)
+            break;
+        if (!(tmp = strdup(token)))
+            goto ret;
+        parts[i++] = tmp;
+        if (i >= count)
+            break;
+    }
+
+    free(copy);
+    return i;
+
+ret:
+    free(copy);
+    for(int j=0; j<i; j++)
+        free(parts[j]);
+    return -1;
 }
