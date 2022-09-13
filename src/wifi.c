@@ -44,15 +44,32 @@ static int _wifi_error(wifi_t *wifi, int code, int c_errno, const char *fmt, ...
 void wifi_scan(wifi_t *wifi)
 {
     if (wifi && wifi->backend && wifi->backend->scan) {
-        printf("%s\n", __func__);
         wifi->backend->scan(wifi->backend_handle);
     }
 }
 
-bool wifi_connection_info(wifi_t *wifi, wifi_network_info_t *info)
+bool wifi_connect_ssid(wifi_t *wifi, wifi_network_info_t *network)
+{
+    if (wifi && wifi->backend && wifi->backend->connect_ssid) {
+        return wifi->backend->connect_ssid(wifi->backend_handle, network);
+    }
+    
+    return false;
+}
+
+bool wifi_disconnect_ssid(wifi_t *wifi, wifi_network_info_t *network)
+{
+    if (wifi && wifi->backend && wifi->backend->disconnect_ssid) {
+        return wifi->backend->disconnect_ssid(wifi->backend_handle, network);
+    }
+    
+    return false;
+}
+
+bool wifi_connection_info(wifi_t *wifi, wifi_network_info_t *network)
 {
     if (wifi && wifi->backend && wifi->backend->connection_info)
-        return wifi->backend->connection_info(wifi->backend_handle, info);
+        return wifi->backend->connection_info(wifi->backend_handle, network);
     
     return false;
 }

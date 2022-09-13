@@ -74,11 +74,12 @@ char *string_trim(char *s)
 {
     string_trim_right(s);
     string_trim_left(s);
+    return s;
 }
 
 int string_split(const char *s, const char *delim, char *parts[], size_t count)
 {
-    int i = 0;
+    size_t i = 0;
     char *copy = NULL, *tmp = NULL;
 
     if (!(copy = strdup(s)))
@@ -112,7 +113,7 @@ int string_split(const char *s, const char *delim, char *parts[], size_t count)
 
 ret:
     free(copy);
-    for(int j=0; j<i; j++)
+    for(size_t j=0; j<i; j++)
         free(parts[j]);
     return -1;
 }
